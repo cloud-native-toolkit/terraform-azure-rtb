@@ -1,15 +1,18 @@
 terraform {
+  required_providers {
+    azurerm = {
+      source  = "hashicorp/azurerm"
+      version = "=3.0.0"
+    }
+  }
 }
 
-module setup_clis {
-  source = "github.com/cloud-native-toolkit/terraform-util-clis.git"
-
-  bin_dir = "${path.cwd}/test_bin_dir"
-  clis = ["ibmcloud"]
+locals {
+  name_prefix = "${var.resource_group_name}-${random_string.cluster_id.result}"
 }
 
-resource local_file bin_dir {
-  filename = "${path.cwd}/.bin_dir"
-
-  content = module.setup_clis.bin_dir
+resource "random_string" "cluster_id" {
+    length = 5
+    special = false
+    upper = false
 }
