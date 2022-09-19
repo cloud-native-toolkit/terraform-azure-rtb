@@ -20,9 +20,8 @@ resource "azurerm_route" "routes" {
 
 // Associate subnets with route table
 resource "azurerm_subnet_route_table_association" "subnets" {
-    for_each = toset(var.subnet_ids)
+    count = length(var.subnet_ids)
 
     route_table_id = azurerm_route_table.rtb.id
-
-    subnet_id = each.value.subnet_id
+    subnet_id = var.subnet_ids[count.index]
 }
