@@ -11,10 +11,6 @@ versions:
         refs:
           - source: github.com/cloud-native-toolkit/terraform-azure-resource-group
             version: ">= 1.1.1"
-      - id: vnet
-        refs:
-          - source: github.com/cloud-native-toolkit/terraform-azure-vnet
-            version: ">= 1.1.3"
       - id: subnets
         refs:
           - source: github.com/cloud-native-toolkit/terraform-azure-subnets
@@ -29,4 +25,13 @@ versions:
         moduleRef:
           id: resource_group
           output: name
+      - name: subnet_ids
+        moduleRef: 
+          id: subnets
+          output: ids
+    outputs:
+      - name: id
+        description: "ID of the created route table"
+      - name: name
+        description: "Name of the created route table"
 cloudProvider: azure
