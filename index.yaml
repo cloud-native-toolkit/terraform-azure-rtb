@@ -1,9 +1,64 @@
 name: azure-rtb
 type: terraform
-description: Module to provision rtb on azure
+description: Module to provision a route table on Azure
 tags:
-  - tools
-  - devops
-versions: []
+  - azure
+  - network
+versions:
+  - platforms: []
+    dependencies:
+      - id: resource_group
+        refs:
+          - source: github.com/cloud-native-toolkit/terraform-azure-resource-group
+            version: '>= 1.1.1'
+      - id: subnets
+        refs:
+          - source: github.com/cloud-native-toolkit/terraform-azure-subnets
+            version: '>= 1.3.7'
+        optional: true
+    variables:
+      - name: name_prefix
+        type: string
+        description: Prefix for component names.
+        default: ''
+        scope: global
+      - name: resource_group_name
+        type: string
+        description: Name of the resource group to deploy into
+        moduleRef:
+          id: resource_group
+          output: name
+      - name: name
+        type: string
+        description: Name for route table. Leave blank to use name_prefix. (default = \"\")
+        default: ''
+      - name: region
+        type: string
+        description: Region to deploy route table into.
+        default: '"" '
+        scope: global
+      - name: routes
+        type: |-
+          list(object({
+                  name            = string    // Name of the route
+                  address_prefix  = string    // Address CIDR for traffic or Azure Service Tag
+                  next_hop_type   = string    // gateway for traffic (None, Internet, VnetLocal, VirtualNetworkGateway, VirtualAppliance)
+                  next_hop_in_ip_address = string   // Address for Virtual Appliance
+              }))
+        description: List of routes to create (default = \"\")
+        default: '[]'
+      - name: subnet_ids
+        type: list(string)
+        description: List of subnet ids to associate with route table (default = \"\")
+        default: []
+        moduleRef:
+          id: subnets
+          output: ids
+    outputs:
+      - name: name
+        description: Name of the created route table
+      - name: id
+        description: ID of the created route table
+    version: v1.0.0
 cloudProvider: azure
 id: github.com/cloud-native-toolkit/terraform-azure-rtb
